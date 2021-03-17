@@ -254,8 +254,8 @@ public:
 				return;
 			}
 
-			int16 x = me()->GetX();
-			int16 y = me()->GetY();
+			coord_type x = me()->GetX();
+			coord_type y = me()->GetY();
 
 			WorldGrid const& attr = me()->GetGrid();
 

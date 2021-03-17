@@ -6207,70 +6207,81 @@ void Player::TeleportRequest(uint8 * Packet)
 
 	POINTER_PCT_LOG(TELEPORT_REQUEST, lpMsg, Packet, 0);
 
-	TeleportRequest(sTeleport->GetTeleport(lpMsg->id), lpMsg->event_id);
+	this->TeleportRequest(sTeleport->GetTeleport(lpMsg->id), lpMsg->event_id);
 }
 
-void Player::TeleportRequest(TeleportData const* teleportData, uint8 eventId)
+void Player::TeleportRequest(TeleportData const* teleport, uint8 event_id)
 {
-	if (!teleportData)
+	if ( !teleport )
 	{
 		this->SendNotice(CUSTOM_MESSAGE_ID_RED, "Invalid teleport location.");
 		return;
 	}
 
-	if (this->GetTotalLevel() < teleportData->MinLevel)
+	int16 min_level = teleport->min_level;
+
+	if ( this->GetTotalLevel() < min_level )
 	{
-		this->SendNotice(CUSTOM_MESSAGE_ID_RED, "Required level %d to move to %s.", teleportData->MinLevel, teleportData->Name.c_str());
+		this->SendNotice(CUSTOM_MESSAGE_ID_RED, "Required level %d to move to %s.", min_level, teleport->GetName().c_str());
 		return;
 	}
 
-	auto price = teleportData->Zen;
+	uint32 price = teleport->zen;
 
-	if (this->IsHighMurder())
+	if ( this->IsHighMurder() )
+	{
 		price *= sGameServer->GetPlayerPKWarpCostIncrease();
+	}
 
-	if (!this->MoneyHave(price))
+	if ( !this->MoneyHave(price) )
 	{
-		this->SendNotice(CUSTOM_MESSAGE_ID_RED, "You need %u zen to move to %s.", price, teleportData->Name.c_str());
+		this->SendNotice(CUSTOM_MESSAGE_ID_RED, "You need %u zen to move to %s.", price, teleport->GetName().c_str());
 		return;
 	}
 
-	if (this->IsInSelfDefense())
+	if ( this->IsInSelfDefense() )
 	{
 		this->SendNotice(CUSTOM_MESSAGE_ID_RED, "You can't teleport while self defense is active.");
 		return;
 	}
 
-	auto gate = teleportData->Gate;
+	uint16 gate = teleport->gate;
 
-	switch (eventId)
+	switch ( event_id )
 	{
 	case EVENT_NOTIFICATION_CHAOS_CASTLE:
-		gate = 503;
-		break;
+		{
+			gate = 503;
+		} break;
 
 	case EVENT_NOTIFICATION_BLOOD_CASTLE:
-		gate = BLOOD_CASTLE_GATE;
-		break;
+		{
+			gate = BLOOD_CASTLE_GATE;
+		} break;
 
 	case EVENT_NOTIFICATION_DEVIL_SQUARE:
-		gate = DEVIL_SQUARE_GATE;
-		break;
+		{
+			gate = DEVIL_SQUARE_GATE;
+		} break;
 
 	case EVENT_NOTIFICATION_ILLUSION_TEMPLE:
-		gate = 506;
-		break;
+		{
+			gate = 506;
+		} break;
 
 	case EVENT_NOTIFICATION_DOPPELGANGER:
-		gate = 507;
-		break;
+		{
+			gate = 507;
+		} break;
 	}
 
 	WARP_RESULT pMsg;
-	SendPacket(&pMsg);
+	this->SEND_PCT(pMsg);
 
-	if (MoveToGate(gate))
-		MoneyReduce(price);
+	if ( this->MoveToGate(gate) )
+	{
+		this->MoneyReduce(price);
+	}
 }
 
 void Player::TeleportRequestSecond(uint8 * Packet)
@@ -6344,8 +6355,8 @@ void Player::TeleportRequestSecond(uint8 * Packet)
 			return;
 		}
 
-		int16 x = lpMsg->x;
-		int16 y = lpMsg->y;
+		coord_type x = lpMsg->x;
+		coord_type y = lpMsg->y;
 
 		if (x == this->GetX() && y == this->GetY())
 		{
@@ -6557,94 +6568,107 @@ void Player::TeleportResult(uint16 id, bool regen)
 	}
 }
 
-bool Player::MoveToGate(uint16 gateId)
+bool Player::MoveToGate(uint16 gate_id)
 {
 	this->HelperStop(0x01);
 
-	if (!this->IsLive() || this->GetRegenStatus() != REGEN_NONE)
+	if ( !this->IsLive() || this->GetRegenStatus() != REGEN_NONE )
+	{
 		return false;
+	}
 
-	if (!this->IsActionAllowed(PlayerAction::PLAYER_ACTION_TELEPORT))
+	if ( !this->IsActionAllowed(PlayerAction::PLAYER_ACTION_TELEPORT) )
 	{
 		this->SendNotice(CUSTOM_MESSAGE_ID_RED, "You are not allowed to teleport.");
 		return false;
 	}
 
-	if (this->GetInterfaceState()->GetID() != InterfaceData::None)
+	if ( this->GetInterfaceState()->GetID() != InterfaceData::None )
 	{
 		this->SendNotice(CUSTOM_MESSAGE_ID_RED, "You are busy to teleport.");
 		return false;
 	}
 
-	auto gate = sTeleport->GetGate(gateId, true);
-	if (!gate)
-		return false;
+	GateData const* pGate = sTeleport->GetGate(gate_id, true);
+	SafeRAssert(pGate, "pGate == nullptr", false);
 
-	if (IF_MAP_RANGE(this->GetWorldId()) && IF_MAP_RANGE(gate->MapId))
+	if ( IF_MAP_RANGE(this->GetWorldId()) && IF_MAP_RANGE(pGate->world) )
 	{
-		if (!sImperialFortressMgr->UpdatePlayerGate(this, gateId))
+		if ( !sImperialFortressMgr->UpdatePlayerGate(this, gate_id) )
+		{
 			return false;
+		}
 	}
 
-	if (!this->CanEnterWorld(gate->MapId, gate->X1, gate->Y1, gate->X2, gate->Y2, true))
-		return false;
-
-	if (this->GetTotalLevel() < gate->MinLevel)
+	if ( !this->CanEnterWorld(pGate->world, pGate->x1, pGate->y1, pGate->x2, pGate->y2, true) )
 	{
-		this->SendNotice(CUSTOM_MESSAGE_ID_RED, "Minimum level required to teleport: %d", gate->MinLevel);
 		return false;
 	}
 
-	int16 tmp_x = gate->X1;
-	int16 tmp_y = gate->Y1;
-	uint16 tmp_map = gate->MapId;
-	uint8 tmp_direction = gate->Direction;
+	int16 min_level = pGate->min_level;
+
+	if ( this->GetTotalLevel() < min_level )
+	{
+		this->SendNotice(CUSTOM_MESSAGE_ID_RED, "Minimum level required to teleport: %d", min_level);
+		return false;
+	}
+
+	coord_type tmp_x = pGate->x1;
+	coord_type tmp_y = pGate->y1;
+	world_type tmp_world = pGate->world;
+	uint8 tmp_direction = pGate->direction;
 	int32 tmp_instance = this->GetInstance();
 
-	this->GetValidCoordinates(gate->Id, tmp_map, tmp_x, tmp_y);
+	this->GetValidCoordinates(pGate->id, tmp_world, tmp_x, tmp_y);
 	this->CancelDelayedTeleport();
-
-	if (AW_MAP_RANGE(tmp_map))
+	
+	if ( AW_MAP_RANGE(tmp_world) )
 	{
-		if (sProtectorOfAcheron->GetState() >= PROTECTOR_OF_ACHERON_STATE_PLAYING)
+		if ( sProtectorOfAcheron->GetState() >= PROTECTOR_OF_ACHERON_STATE_PLAYING )
 		{
 
 		}
 		else
 		{
-			if (sArkaWar->GetState() == ARKA_WAR_STATE_STANDBY)
+			if ( sArkaWar->GetState() == ARKA_WAR_STATE_STANDBY )
 			{
-				if (gateId != 426)
+				if ( gate_id != 426 )
+				{
 					return false;
+				}
 			}
-			else if (sArkaWar->GetState() >= ARKA_WAR_STATE_PLAYING)
+			else if ( sArkaWar->GetState() >= ARKA_WAR_STATE_PLAYING )
 			{
-				if (!sArkaWar->GetGatePosition(this, gateId, tmp_map, tmp_x, tmp_y))
+				if ( !sArkaWar->GetGatePosition(this, gate_id, tmp_world, tmp_x, tmp_y) )
+				{
 					return false;
+				}
 			}
 			else
+			{
 				return false;
+			}
 		}
 	}
 
-	this->StartRegen(tmp_map, tmp_x, tmp_y, tmp_direction, tmp_instance);
+	this->StartRegen(tmp_world, tmp_x, tmp_y, tmp_direction, tmp_instance);
 
-	this->SetCurrentGate(gateId);
+	this->SetCurrentGate(gate_id);
 
-	sArkaWar->SendOccupyZone(this, gateId);
+	sArkaWar->SendOccupyZone(this, gate_id);
 
-	sDungeonRace->PlayerInGate(this, gateId);
-	sLosttowerRace->PlayerInGate(this, gateId);
+	sDungeonRace->PlayerInGate(this, gate_id);
+	sLosttowerRace->PlayerInGate(this, gate_id);
 
 	return true;
 }
 
-void Player::TeleportToLocation(uint16 world, int16 x, int16 y, uint8 direction, int32 instance)
+void Player::TeleportToLocation(world_type world, coord_type x, coord_type y, uint8 direction, int32 instance)
 {
 	this->StartRegen(world, x, y, direction, instance);
 }
 
-void Player::TeleportToLocation(uint16 world)
+void Player::TeleportToLocation(world_type world)
 {
 	World* pWorld = sWorldMgr->GetWorld(world);
 
@@ -6653,8 +6677,8 @@ void Player::TeleportToLocation(uint16 world)
 		return;
 	}
 
-	int16 x = 0;
-	int16 y = 0;
+	coord_type x = 0;
+	coord_type y = 0;
 	pWorld->GetRespawn(world, x, y);
 	this->StartRegen(world, x, y, this->GetDirection(), this->GetInstance());
 }
@@ -6671,16 +6695,16 @@ void Player::TeleportToDelayed()
 
 void Player::TeleportToGate(uint16 gate)
 {
-	uint16 world = 0;
-	int16 x = 130;
-	int16 y = 130;
+	world_type world = 0;
+	coord_type x = 130;
+	coord_type y = 130;
 
 	this->GetValidCoordinates(gate, world, x, y);
 
 	this->StartRegen(world, x, y, this->GetDirection(), this->GetInstance());
 }
 
-void Player::StartRegen(uint16 world, int16 x, int16 y, uint8 direction, int32 instance, uint16 gate_id)
+void Player::StartRegen(world_type world, coord_type x, coord_type y, uint8 direction, int32 instance, uint16 gate_id)
 {
 	this->CancelAllActivities();
 
@@ -6757,6 +6781,48 @@ void Player::StartRegen(uint16 world, int16 x, int16 y, uint8 direction, int32 i
 void Player::MoveFail()
 {
 	this->StartRegen(this->GetWorldId(), this->GetX(), this->GetY(), this->GetDirection(), this->GetInstance());
+}
+
+void Player::TeleportWorld(TeleportData const* teleport, bool pk_check)
+{
+	if ( !teleport )
+	{
+		this->SendNotice(CUSTOM_MESSAGE_ID_RED, "Invalid teleport location.");
+		return;
+	}
+
+	int16 min_level = teleport->min_level;
+
+	if ( this->GetTotalLevel() < min_level )
+	{
+		this->SendNotice(CUSTOM_MESSAGE_ID_RED, "Required level %d to move to %s.", min_level, teleport->GetName().c_str());
+		return;
+	}
+
+	if ( !this->MoneyHave(teleport->zen) )
+	{
+		this->SendNotice(CUSTOM_MESSAGE_ID_RED, "You need %u zen to move to %s.", teleport->zen, teleport->GetName().c_str());
+		return;
+	}
+
+	if ( pk_check && this->IsHighMurder() )
+	{
+		this->SendNotice(CUSTOM_MESSAGE_ID_RED, "Murders are not allowed to teleport.");
+		return;
+	}
+
+	if ( this->IsInSelfDefense() )
+	{
+		this->SendNotice(CUSTOM_MESSAGE_ID_RED, "You can't teleport while self defense is active.");
+		return;
+	}
+
+	if ( !this->MoveToGate(teleport->gate) )
+	{
+		return;
+	}
+
+	this->MoneyReduce(teleport->zen);
 }
 
 void Player::DataLoadingConfirm()
@@ -7591,8 +7657,8 @@ void Player::UpdateMovement()
 	
 		if( this->GetMovePathTime()->Elapsed(MoveTime) )
 		{
-			int16 nextX = Position->GetX();
-			int16 nextY = Position->GetY();
+			coord_type nextX = Position->GetX();
+			coord_type nextY = Position->GetY();
 
 			WorldGrid const& grid = pWorld->GetGrid(nextX, nextY);
 
@@ -7655,7 +7721,7 @@ uint8 Player::GetKalimaLevelEntrance()
 	return return_level;
 }
 
-bool Player::CreateKalimaGate(uint8 level, int16 x, int16 y)
+bool Player::CreateKalimaGate(uint8 level, coord_type x, coord_type y)
 {
 	if ( level == 0 || level > KALIMA_LEVEL )
 		return false;
@@ -7729,11 +7795,11 @@ bool Player::CreateKalimaGate(uint8 level, int16 x, int16 y)
 	return true;
 }
 
-bool Player::GetKalimaGateRandomLocation(int16 & x, int16 & y)
+bool Player::GetKalimaGateRandomLocation(coord_type & x, coord_type & y)
 {
 	int32 count = 100;
-	int16 ix = x;
-	int16 iy = y;
+	coord_type ix = x;
+	coord_type iy = y;
 
 	World* pWorld = this->GetWorld();
 
@@ -7876,7 +7942,7 @@ void Player::PetInfoLevelUp(uint8 slot, uint8 pet)
 	this->SendPacket(&pMsg);
 }
 
-bool Player::CreateMercenary(uint8 level, int16 x, int16 y)
+bool Player::CreateMercenary(uint8 level, coord_type x, coord_type y)
 {
 	if ( this->GetWorldId() != WORLD_CASTLE_SIEGE )
 	{
@@ -8864,11 +8930,11 @@ void Player::Respawn()
 
 void Player::GenerateRespawnLocation(bool from_select)
 {
-	int16 x = this->GetX();
-	int16 y = this->GetY();
+	coord_type x = this->GetX();
+	coord_type y = this->GetY();
 	World* pWorld = this->GetWorld();
 	int32 instance = -1;
-	uint16 world = this->GetWorldId();
+	world_type world = this->GetWorldId();
 	Guild* pGuild = this->GuildGet();
 
 	SafeAssert(pWorld, "pWorld == nullptr");
@@ -12414,7 +12480,7 @@ void Player::PVPDamageReduction(int32 & damage, Player* pPlayer)
 	}
 }
 
-void Player::SendWorldAttribute(uint8 type, uint8 attribute, uint8 count, bool apply, int16 const* data)
+void Player::SendWorldAttribute(uint8 type, uint8 attribute, uint8 count, bool apply, coord_type const* data)
 {
 	uint8 buffer[255];
 	POINTER_PCT(WORLD_ATTRIBUTE_SET_HEAD, head, buffer, 0);
@@ -12509,7 +12575,7 @@ ViewportData* Player::GetViewportItemByID(uint16 id)
 	return nullptr;
 }
 
-bool Player::CanEnterWorld(uint16 world, int16 x1, int16 y1, int16 x2, int16 y2, bool send_message)
+bool Player::CanEnterWorld(world_type world, coord_type x1, coord_type y1, coord_type x2, coord_type y2, bool send_message)
 {
 	World* pWorld = sWorldMgr->GetWorld(world);
 
@@ -16811,7 +16877,7 @@ void Player::UpdateMapState()
 
 			if ( pData->IsSend() )
 			{
-				int16 coord[4] = { pData->GetX1(), pData->GetY1(), pData->GetX2(), pData->GetY2() };
+				coord_type coord[4] = { pData->GetX1(), pData->GetY1(), pData->GetX2(), pData->GetY2() };
 				this->SendWorldAttribute(0, pData->GetAttribute(), 1, pData->IsApply(), coord);
 			}
 		}

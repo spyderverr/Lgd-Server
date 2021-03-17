@@ -1,7 +1,7 @@
 static const struct FereaZoneData
 {
-	int16 x;
-	int16 y;
+	coord_type x;
+	coord_type y;
 } g_FereaZoneData[2] =
 {
 	{ 21, 106 },
@@ -233,8 +233,8 @@ public:
 				{
 					this->pSupport[i] = pMonster;
 
-					int16 x = me()->GetX();
-					int16 y = me()->GetY();
+					coord_type x = me()->GetX();
+					coord_type y = me()->GetY();
 
 					pWorld->GetRandomLocation(x, y, 10);
 
@@ -562,7 +562,7 @@ public:
 			return true;
 		}
 
-		bool MoveAllowed(int16 x, int16 y)
+		bool MoveAllowed(coord_type x, coord_type y)
 		{
 			if ( this->GetGeneral() )
 			{
@@ -608,8 +608,8 @@ public:
 				{
 					this->pSupport[i] = pMonster;
 
-					int16 x = me()->GetX();
-					int16 y = me()->GetY();
+					coord_type x = me()->GetX();
+					coord_type y = me()->GetY();
 
 					pWorld->GetRandomLocation(x, y, 10);
 
@@ -744,8 +744,8 @@ public:
 				return;
 			}
 
-			int16 x = me()->GetX();
-			int16 y = me()->GetY();
+			coord_type x = me()->GetX();
+			coord_type y = me()->GetY();
 
 			if ( me()->GetTarget() )
 			{
@@ -872,8 +872,8 @@ public:
 
 				if ( this->GetGeneral() )
 				{
-					int16 x = me()->GetX();
-					int16 y = me()->GetY();
+					coord_type x = me()->GetX();
+					coord_type y = me()->GetY();
 
 					//pWorld->GetRandomLocation(x, y, 3);
 

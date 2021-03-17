@@ -487,7 +487,7 @@ void Player::PartyMove(uint8 * Packet)
 		return;
 	}
 
-	int16 move_level = sTeleport->GetMoveLevel(pPlayer->GetWorldId(), pPlayer->GetX(), pPlayer->GetY());
+	int16 move_level = sTeleport->GetMoveLevel(pPlayer->GetWorldId(), pPlayer->GetX(), pPlayer->GetY(), this->IsSpecialCharacter());
 
 	if (this->GetTotalLevel() < move_level || move_level == -1)
 	{
@@ -660,20 +660,20 @@ void Player::PartySummon(uint8 * Packet)
 			continue;
 		}
 
-		int16 move_level = sTeleport->GetMoveLevel(this->GetWorldId(), this->GetX(), this->GetY());
+		int16 move_level = sTeleport->GetMoveLevel(this->GetWorldId(), this->GetX(), this->GetY(), pMember->IsSpecialCharacter());
 		bool busy = pMember->IsBusy();
 		bool equipment = pMember->CanEnterWorld(this->GetWorldId(), this->GetX(), this->GetY(), this->GetX(), this->GetY());
 
 		if (pMember->GetTotalLevel() >= move_level && move_level != -1 && !busy && equipment)
 		{
-			int16 x = this->GetX();
-			int16 y = this->GetY();
+			coord_type x = this->GetX();
+			coord_type y = this->GetY();
 			int32 loop = 50;
 
 			while (loop-- > 0)
 			{
-				int16 tmp_x = this->GetX() + RANDOM(9) - 4;
-				int16 tmp_y = this->GetY() + RANDOM(9) - 4;
+				coord_type tmp_x = this->GetX() + RANDOM(9) - 4;
+				coord_type tmp_y = this->GetY() + RANDOM(9) - 4;
 
 				if (this->TeleportAreaCheck(tmp_x, tmp_y))
 				{

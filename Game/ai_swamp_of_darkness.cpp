@@ -352,8 +352,8 @@ public:
 
 				if (pMonster)
 				{
-					int16 x = me()->GetX();
-					int16 y = me()->GetY();
+					coord_type x = me()->GetX();
+					coord_type y = me()->GetY();
 
 					pWorld->GetRandomLocation(x, y, 15);
 

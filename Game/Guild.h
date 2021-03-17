@@ -118,7 +118,7 @@ class Guild
 
 		void UpdateHostilNotify();
 
-		bool LifeStoneTeleport(Player* pPlayer, int16 & x, int16 & y);
+		bool LifeStoneTeleport(Player* pPlayer, coord_type & x, coord_type & y);
 		void LifeStoneKill();
 
 		void UpdateRegisteredInSiege();

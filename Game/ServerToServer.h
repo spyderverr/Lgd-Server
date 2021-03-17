@@ -4,10 +4,10 @@
 struct WorldServer
 {
 	DECLARE_ENUM(uint16, Server);
-	DECLARE_ENUM(uint16, World);
+	DECLARE_ENUM(world_type, World);
 };
 
-typedef std::set<uint16> DisabledWorldList;
+typedef std::set<world_type> DisabledWorldList;
 
 class ServerToServer
 {
@@ -17,7 +17,7 @@ class ServerToServer
 		ServerToServer();
 		virtual ~ServerToServer();
 
-		bool IsWorldEnabled(uint16 world) const;
+		bool IsWorldEnabled(world_type world) const;
 
 	private:
 		DisabledWorldList disabled_world_list;

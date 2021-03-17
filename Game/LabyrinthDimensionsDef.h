@@ -74,9 +74,9 @@ enum
 
 static const struct LabyrinthOfDimensionsWorldData
 {
-	uint16 world;
-	int16 x;
-	int16 y;
+	world_type world;
+	coord_type x;
+	coord_type y;
 } g_LabyrinthOfDimensionsWorldData[1] = 
 {
 	{ WORLD_LABYRINTH_OF_DIMENSIONS_BATTLE, 20, 13 },

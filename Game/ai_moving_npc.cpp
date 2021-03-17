@@ -41,7 +41,7 @@ public:
 			return false;
 		}
 
-		bool MoveAllowed(int16 x, int16 y)
+		bool MoveAllowed(coord_type x, coord_type y)
 		{
 			return me()->GetWorld()->GetGrid(x, y).IsSummonedMoveAllowed();
 		}

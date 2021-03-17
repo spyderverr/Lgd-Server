@@ -14,9 +14,9 @@ enum ProtectorOfAcheronState
 
 static const struct ProtectorOfAcheronZone
 {
-	uint16 world;
-	int16 x;
-	int16 y;
+	world_type world;
+	coord_type x;
+	coord_type y;
 } g_ProtectorOfAcheronZone[PROTECTOR_OF_ACHERON_MAX_ZONE] =
 {
 	{92, 89, 41},

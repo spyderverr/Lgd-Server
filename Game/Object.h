@@ -20,7 +20,7 @@ class ObjectLocation
 			this->Reset();
 		}
 
-		ObjectLocation(uint16 world, int32 instance, int16 x, int16 y);
+		ObjectLocation(world_type world, int32 instance, coord_type x, coord_type y);
 
 		void Reset()
 		{
@@ -40,14 +40,14 @@ class ObjectLocation
 			this->SetInstance(data->GetInstance());
 		}
 
-		uint16 GetDisplayWorld() const;
+		world_type GetDisplayWorld() const;
 
 		bool IsWorldFlag(uint32 flag) const;
 		
 	public:
-		DECLARE_PROPERTY(uint16, WorldId);
-		DECLARE_PROPERTY(int16, X);
-		DECLARE_PROPERTY(int16, Y);
+		DECLARE_PROPERTY(world_type, WorldId);
+		DECLARE_PROPERTY(coord_type, X);
+		DECLARE_PROPERTY(coord_type, Y);
 		DECLARE_PROPERTY(uint8, Direction);
 		DECLARE_PROPERTY(int32, Instance);
 };
@@ -101,36 +101,36 @@ class Object
 		ObjectCastTo(WorldItem, WorldItem);
 		ObjectCastTo(Unit, Unit);
 		
-		void SetWorldId(uint16 world) { this->GetLocation()->SetWorldId(world); }
-		void SetX(int16 x) { this->GetLocation()->SetX(x); }
-		void SetY(int16 y) { this->GetLocation()->SetY(y); }
+		void SetWorldId(world_type world) { this->GetLocation()->SetWorldId(world); }
+		void SetX(coord_type x) { this->GetLocation()->SetX(x); }
+		void SetY(coord_type y) { this->GetLocation()->SetY(y); }
 		void SetDirection(uint8 direction) { this->GetLocation()->SetDirection(direction); }
 		void SetInstance(int32 instance) { this->GetLocation()->SetInstance(instance); }
 		
-		uint16 GetWorldId() const { return this->GetLocation()->GetWorldId(); }
+		world_type GetWorldId() const { return this->GetLocation()->GetWorldId(); }
 		World * GetWorld() const;
 		const char* GetWorldName() const;
-		int16 GetX() const { return this->GetLocation()->GetX(); }
-		int16 GetY() const { return this->GetLocation()->GetY(); }
+		coord_type GetX() const { return this->GetLocation()->GetX(); }
+		coord_type GetY() const { return this->GetLocation()->GetY(); }
 		uint8 GetDirection() const { return this->GetLocation()->GetDirection(); }
 		int32 GetInstance() const { return this->GetLocation()->GetInstance(); }
 		bool IsWorldFlag(uint32 flag) const { return this->GetLocation()->IsWorldFlag(flag); }
 
-		uint16 GetDisplayWorld() const { return this->GetLocation()->GetDisplayWorld(); }
+		world_type GetDisplayWorld() const { return this->GetLocation()->GetDisplayWorld(); }
 
 		DECLARE_STRUCT(ObjectLocation, Location);
 		DECLARE_STRUCT(ObjectLocation, LastLocation);
 
 		bool SameDimension(Object const* pObject) const;
-		bool SameDimension(uint16 world, int32 instance) const;
+		bool SameDimension(world_type world, int32 instance) const;
 
 		WorldGrid GetGrid() const;
 		bool IsInSafeZone() const;
 		void UpdateWorld();
 		void CreateFrustrum();
 
-		int32 Distance(int16 x, int16 y);
-		bool InRange(int16 x, int16 y, int32 distance);
+		int32 Distance(coord_type x, coord_type y);
+		bool InRange(coord_type x, coord_type y, int32 distance);
 
 		virtual void sendPacket(uint8 * packet, uint16 len) { }
 		virtual void sendPacket(uint8 * packet) { }
@@ -216,7 +216,7 @@ class Object
 		uint32 GetHighGUID() const;
 
 		bool CheckWall(Object* pObject) const;
-		bool CheckWall(int16 x, int16 y) const;
+		bool CheckWall(coord_type x, coord_type y) const;
 	private:
 		DECLARE_ENUM(uint16, Entry);
 		DECLARE_ENUM(ObjectType, Type);

@@ -253,7 +253,7 @@ public:
 			pInstance->ReduceMonsterCount(1);
 		}
 
-		bool MoveAllowed(int16 x, int16 y)
+		bool MoveAllowed(coord_type x, coord_type y)
 		{
 			ImperialFortressInstance * pInstance = sImperialFortressMgr->GetInstance(this->GetInstance());
 
@@ -389,7 +389,7 @@ public:
 			return true;
 		}
 
-		bool MoveAllowed(int16 x, int16 y)
+		bool MoveAllowed(coord_type x, coord_type y)
 		{
 			ImperialFortressInstance * pInstance = sImperialFortressMgr->GetInstance(this->GetInstance());
 
@@ -470,8 +470,8 @@ public:
 
 			Player* pMaxAttacker = me()->GetMaxAttacker();
 			Unit* pOwner = pMaxAttacker ? pMaxAttacker->ToUnit(): me()->ToUnit();
-			int16 x = me()->GetX();
-			int16 y = me()->GetY();
+			coord_type x = me()->GetX();
+			coord_type y = me()->GetY();
 			
 			for( int32 i = 0; i < count; ++i )
 			{

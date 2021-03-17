@@ -329,8 +329,8 @@ public:
 				{
 					this->pSupport[i] = pMonster;
 
-					int16 x = me()->GetX();
-					int16 y = me()->GetY();
+					coord_type x = me()->GetX();
+					coord_type y = me()->GetY();
 
 					pWorld->GetRandomLocation(x, y, 10);
 
@@ -485,8 +485,8 @@ public:
 
 					if ( this->Summoned[i] )
 					{
-						int16 x = me()->GetX();
-						int16 y = me()->GetY();
+						coord_type x = me()->GetX();
+						coord_type y = me()->GetY();
 
 						pWorld->GetRandomLocation(x, y, 3);
 
