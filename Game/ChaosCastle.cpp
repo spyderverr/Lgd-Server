@@ -381,41 +381,49 @@ void ChaosCastle::KillPlayer(Player* pPlayer)
 
 void ChaosCastle::AddMonster()
 {
-	int32 players_count = GetPlayersCount(false);
+	int32 players_count = this->GetPlayersCount(false);
 
-	SetMonsterItemDrop(0);
-	SetMonsterItemDropCounter(0);
+	this->SetMonsterItemDrop(0);
+	this->SetMonsterItemDropCounter(0);
 
-	auto event_monsters = sMonsterManager->GetEventMonsters(GetEvent());
-	for (auto itr = event_monsters.first; itr != event_monsters.second; ++itr)
+	for ( MonsterEventList::const_iterator it = sMonsterMgr->monster_event_list.begin(); it != sMonsterMgr->monster_event_list.end(); ++it )
 	{
-		auto const& event_monster = itr->second;
-
-		if (event_monster->chaos_castle.ground != GetGround())
-			continue;
-
-		auto monster = sObjectMgr->MonsterTryAdd(event_monster->MonsterId, event_monster->MapId);
-		if (monster)
+		if ( (*it)->GetEventID() != this->GetEvent() )
 		{
-			monster->SetEventDBData(event_monster);
-			monster->SetRespawnType(GAME_OBJECT_RESPAWN_DELETE);
-			monster->SetEventGround(this->GetGround());
-			monster->AddToWorld();
+			continue;
+		}
 
-			Log("Added Monster [%u][%u]", monster->GetEntry(), monster->GetClass());
+		if ( (*it)->chaos_castle.ground != this->GetGround() )
+		{
+			continue;
+		}
 
-			IncreaseMonsterCount(1);
+		Monster* pMonster = sObjectMgr->MonsterTryAdd((*it)->GetID(), (*it)->GetWorld());
+
+		if ( pMonster )
+		{
+			pMonster->SetEventDBData(*it);
+			pMonster->SetRespawnType(GAME_OBJECT_RESPAWN_DELETE);
+			pMonster->SetEventGround(this->GetGround());
+			pMonster->AddToWorld();
+
+			this->Log("Added Monster [%u][%u]", pMonster->GetEntry(), pMonster->GetClass());
+
+			this->IncreaseMonsterCount(1);
 
 			++players_count;
-			if (players_count >= MAX_CHAOS_CASTLE_ENEMY)
+
+			if ( players_count >= MAX_CHAOS_CASTLE_ENEMY )
 				break;
 		}
 	}
 
-	if (item_list.size() > 0)
-		SetMonsterItemDrop(GetMonsterCount() / item_list.size());
+	if ( this->item_list.size() > 0 )
+	{
+		this->SetMonsterItemDrop(this->GetMonsterCount() / this->item_list.size());
+	}
 
-	Log("Added %d monsters / Total Items %u / Item drop every %d monsters", GetMonsterCount(), item_list.size(), GetMonsterItemDrop());
+	this->Log("Added %d monsters / Total Items %u / Item drop every %d monsters", this->GetMonsterCount(), this->item_list.size(), this->GetMonsterItemDrop());
 }
 
 void ChaosCastle::GiveItemToWinner(Player* pPlayer, int32 score)

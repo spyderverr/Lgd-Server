@@ -559,47 +559,57 @@ void CCastleSiege::ClearNonDBNpc()
 
 bool CCastleSiege::AddDBNpc(CastleSiegeNpcData* NpcData)
 {
-	auto event_monsters = sMonsterManager->GetEventMonsters(EVENT_CASTLE_SIEGE);
-	for (auto itr = event_monsters.first; itr != event_monsters.second; ++itr)
+	for ( MonsterEventList::const_iterator it = sMonsterMgr->monster_event_list.begin(); it != sMonsterMgr->monster_event_list.end(); ++it )
 	{
-		auto const& event_monster = itr->second;
-
-		if (event_monster->MonsterId != NpcData->monster.get())
-			continue;
-
-		if (event_monster->castle_siege.id != NpcData->id.get())
-			continue;
-
-		auto monster = sObjectMgr->MonsterTryAdd(event_monster->MonsterId, event_monster->MapId);
-		if (monster)
+		if ( (*it)->GetEventID() != EVENT_CASTLE_SIEGE )
 		{
-			monster->SetEventDBData(event_monster);
-			monster->SetRespawnType(GAME_OBJECT_RESPAWN_DELETE);
-			monster->SetRespawnLocation(MONSTER_RESPAWN_ZONE);
-			monster->SetRespawn(1000);
-			monster->SetCastleSiegeJoinSide(NpcData->side.get());
-			monster->SetEventGround(NpcData->id.get());
+			continue;
+		}
 
-			switch (monster->GetClass())
+		if ( (*it)->GetID() != NpcData->monster.get() )
+		{
+			continue;
+		}
+
+		if ( (*it)->castle_siege.id != NpcData->id.get() )
+		{
+			continue;
+		}
+
+		Monster* pMonster = sObjectMgr->MonsterTryAdd((*it)->GetID(), (*it)->GetWorld());
+
+		if ( pMonster )
+		{
+			pMonster->SetEventDBData(*it);
+			pMonster->SetRespawnType(GAME_OBJECT_RESPAWN_DELETE);
+			pMonster->SetRespawnLocation(MONSTER_RESPAWN_ZONE);
+			pMonster->SetRespawn(1000);
+			pMonster->SetCastleSiegeJoinSide(NpcData->side.get());
+			pMonster->SetEventGround(NpcData->id.get());
+
+			switch ( pMonster->GetClass() )
 			{
 			case 283:
 			case 277:
 			case 219:
-				monster->AddAdditionalDataInt(0, NpcData->id.get());
-				break;
-
+				{
+					pMonster->AddAdditionalDataInt(0, NpcData->id.get());
+				} break;
+	
 			case 222:
-				monster->AddAdditionalDataInt(0, CASTLE_SIEGE_MACHINE_DEFENSE);
-				break;
+				{
+					pMonster->AddAdditionalDataInt(0, CASTLE_SIEGE_MACHINE_DEFENSE);
+				} break;
 
 			case 221:
-				monster->AddAdditionalDataInt(0, CASTLE_SIEGE_MACHINE_ATTACK);
-				break;
+				{
+					pMonster->AddAdditionalDataInt(0, CASTLE_SIEGE_MACHINE_ATTACK);
+				} break;
 			}
 
-			sLog->outInfo("root", "Loading Castle Siege NPC [Stage 4] Creating Npc [%u/%u] [%u/%s]", NpcData->monster.get(), NpcData->id.get(), monster->GetEntry(), monster->GetName());
+			sLog->outInfo("root", "Loading Castle Siege NPC [Stage 4] Creating Npc [%u/%u] [%u/%s]", NpcData->monster.get(), NpcData->id.get(), pMonster->GetEntry(), pMonster->GetName());
 
-			monster->AddToWorld();
+			pMonster->AddToWorld();
 			return true;
 		}
 	}

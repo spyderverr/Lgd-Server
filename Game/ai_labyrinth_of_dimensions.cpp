@@ -72,28 +72,38 @@ public:
 
 		void OnRespawn()
 		{
-			auto const instance_level_data = sLabyrinthDimensions->GetMonster(GetLevel());
-			if (!instance_level_data)
+			LabyrinthMonster const* pLabyrinthMonster = sLabyrinthDimensions->GetMonster(this->GetLevel());
+
+			if (!pLabyrinthMonster)
+			{
 				return;
+			}
 
-			me()->PowerSet(POWER_LIFE, me()->GetMonsterTemplate()->Stat[POWER_LIFE] * instance_level_data->GetHP());
-			me()->PowerSetMax(POWER_LIFE, me()->GetMonsterTemplate()->Stat[POWER_LIFE] * instance_level_data->GetHP());
+			monster_template const* pMonsterInfo = sMonsterMgr->GetMonsterTemplate(me()->GetClass());
 
-			me()->SetIntData(UNIT_INT_ATTACK_DAMAGE_LEFT_MIN, me()->GetMonsterTemplate()->DamageMin * instance_level_data->GetDamage());
-			me()->SetIntData(UNIT_INT_ATTACK_DAMAGE_LEFT_MAX, me()->GetMonsterTemplate()->DamageMax * instance_level_data->GetDamage());
-			me()->SetIntData(UNIT_INT_ATTACK_DAMAGE_RIGHT_MIN, me()->GetMonsterTemplate()->DamageMin * instance_level_data->GetDamage());
-			me()->SetIntData(UNIT_INT_ATTACK_DAMAGE_RIGHT_MAX, me()->GetMonsterTemplate()->DamageMax * instance_level_data->GetDamage());
-			me()->SetIntData(UNIT_INT_DEFENSE, me()->GetMonsterTemplate()->Defense * instance_level_data->GetDefense());
-			me()->SetIntData(UNIT_INT_ATTACK_RATE, me()->GetMonsterTemplate()->AttackSuccessRate * instance_level_data->GetAttackSuccessRate());
-			me()->SetIntData(UNIT_INT_DEFENSE_RATE, me()->GetMonsterTemplate()->DefenseSuccessRate * instance_level_data->GetDefenseSuccessRate());
+			if (!pMonsterInfo)
+			{
+				return;
+			}
 
-			me()->SetIntData(UNIT_INT_ELEMENTAL_DAMAGE_MIN, me()->GetMonsterTemplate()->ElementalDamageMin * instance_level_data->GetElementalDamage());
-			me()->SetIntData(UNIT_INT_ELEMENTAL_DAMAGE_MAX, me()->GetMonsterTemplate()->ElementalDamageMax * instance_level_data->GetElementalDamage());
-			me()->SetIntData(UNIT_INT_ELEMENTAL_DEFENSE, me()->GetMonsterTemplate()->ElementalDefense * instance_level_data->GetElementalDefense());
-			me()->SetIntData(UNIT_INT_ELEMENTAL_ATTACK_SUCCESS_RATE, me()->GetMonsterTemplate()->ElementalAttackSuccessRate * instance_level_data->GetElementalAttackSuccessRate());
-			me()->SetIntData(UNIT_INT_ELEMENTAL_DEFENSE_SUCCESS_RATE, me()->GetMonsterTemplate()->ElementalDefenseSuccessRate * instance_level_data->GetElementalDefenseSuccessRate());
+			me()->PowerSet(POWER_LIFE, me()->GetScriptMaxPower(POWER_LIFE) * pLabyrinthMonster->GetHP());
+			me()->PowerSetMax(POWER_LIFE, me()->GetScriptMaxPower(POWER_LIFE) * pLabyrinthMonster->GetHP());
 
-			me()->SetLevel(me()->GetMonsterTemplate()->Level * instance_level_data->GetLevel());
+			me()->SetIntData(UNIT_INT_PHYSICAL_DAMAGE_MIN, pMonsterInfo->attack_min_damage.get() * pLabyrinthMonster->GetDamage());
+			me()->SetIntData(UNIT_INT_PHYSICAL_DAMAGE_MAX, pMonsterInfo->attack_max_damage.get() * pLabyrinthMonster->GetDamage());
+
+			me()->SetIntData(UNIT_INT_DEFENSE, pMonsterInfo->defense.get() * pLabyrinthMonster->GetDefense());
+
+			me()->SetIntData(UNIT_INT_ATTACK_RATE, pMonsterInfo->attack_success.get() * pLabyrinthMonster->GetAttackSuccessRate());
+			me()->SetIntData(UNIT_INT_DEFENSE_RATE, pMonsterInfo->defense_success.get() * pLabyrinthMonster->GetDefenseSuccessRate());
+
+			me()->SetIntData(UNIT_INT_ELEMENTAL_DAMAGE_MIN, pMonsterInfo->GetElementalDamageMin() * pLabyrinthMonster->GetElementalDamage());
+			me()->SetIntData(UNIT_INT_ELEMENTAL_DAMAGE_MAX, pMonsterInfo->GetElementalDamageMax() * pLabyrinthMonster->GetElementalDamage());
+			me()->SetIntData(UNIT_INT_ELEMENTAL_DEFENSE, pMonsterInfo->GetElementalDefense() * pLabyrinthMonster->GetElementalDefense());
+			me()->SetIntData(UNIT_INT_ELEMENTAL_ATTACK_SUCCESS_RATE, pMonsterInfo->GetElementalAttackRate() * pLabyrinthMonster->GetElementalAttackSuccessRate());
+			me()->SetIntData(UNIT_INT_ELEMENTAL_DEFENSE_SUCCESS_RATE, pMonsterInfo->GetElementalDefenseRate() * pLabyrinthMonster->GetElementalDefenseSuccessRate());
+
+			me()->SetLevel(pMonsterInfo->min_level.get() * pLabyrinthMonster->GetLevel());
 		}
 
 		void OnDie()
@@ -192,28 +202,40 @@ public:
 
 		void OnRespawn()
 		{
-			auto const instance_level_data = sLabyrinthDimensions->GetMonster(GetLevel());
-			if (!instance_level_data)
+			LabyrinthMonster const* pLabyrinthMonster = sLabyrinthDimensions->GetMonster(this->GetLevel());
+
+			if (!pLabyrinthMonster)
+			{
 				return;
+			}
 
-			me()->PowerSet(POWER_LIFE, me()->GetMonsterTemplate()->Stat[POWER_LIFE] * instance_level_data->GetHP());
-			me()->PowerSetMax(POWER_LIFE, me()->GetMonsterTemplate()->Stat[POWER_LIFE] * instance_level_data->GetHP());
+			monster_template const* pMonsterInfo = sMonsterMgr->GetMonsterTemplate(me()->GetClass());
 
-			me()->SetIntData(UNIT_INT_ATTACK_DAMAGE_LEFT_MIN, me()->GetMonsterTemplate()->DamageMin * instance_level_data->GetDamage());
-			me()->SetIntData(UNIT_INT_ATTACK_DAMAGE_LEFT_MAX, me()->GetMonsterTemplate()->DamageMax * instance_level_data->GetDamage());
-			me()->SetIntData(UNIT_INT_ATTACK_DAMAGE_RIGHT_MIN, me()->GetMonsterTemplate()->DamageMin * instance_level_data->GetDamage());
-			me()->SetIntData(UNIT_INT_ATTACK_DAMAGE_RIGHT_MAX, me()->GetMonsterTemplate()->DamageMax * instance_level_data->GetDamage());
-			me()->SetIntData(UNIT_INT_DEFENSE, me()->GetMonsterTemplate()->Defense * instance_level_data->GetDefense());
-			me()->SetIntData(UNIT_INT_ATTACK_RATE, me()->GetMonsterTemplate()->AttackSuccessRate * instance_level_data->GetAttackSuccessRate());
-			me()->SetIntData(UNIT_INT_DEFENSE_RATE, me()->GetMonsterTemplate()->DefenseSuccessRate * instance_level_data->GetDefenseSuccessRate());
+			if (!pMonsterInfo)
+			{
+				return;
+			}
 
-			me()->SetIntData(UNIT_INT_ELEMENTAL_DAMAGE_MIN, me()->GetMonsterTemplate()->ElementalDamageMin * instance_level_data->GetElementalDamage());
-			me()->SetIntData(UNIT_INT_ELEMENTAL_DAMAGE_MAX, me()->GetMonsterTemplate()->ElementalDamageMax * instance_level_data->GetElementalDamage());
-			me()->SetIntData(UNIT_INT_ELEMENTAL_DEFENSE, me()->GetMonsterTemplate()->ElementalDefense * instance_level_data->GetElementalDefense());
-			me()->SetIntData(UNIT_INT_ELEMENTAL_ATTACK_SUCCESS_RATE, me()->GetMonsterTemplate()->ElementalAttackSuccessRate * instance_level_data->GetElementalAttackSuccessRate());
-			me()->SetIntData(UNIT_INT_ELEMENTAL_DEFENSE_SUCCESS_RATE, me()->GetMonsterTemplate()->ElementalDefenseSuccessRate * instance_level_data->GetElementalDefenseSuccessRate());
+			me()->PowerSet(POWER_LIFE, me()->GetScriptMaxPower(POWER_LIFE) * pLabyrinthMonster->GetHP());
+			me()->PowerSetMax(POWER_LIFE, me()->GetScriptMaxPower(POWER_LIFE) * pLabyrinthMonster->GetHP());
 
-			me()->SetLevel(me()->GetMonsterTemplate()->Level * instance_level_data->GetLevel());
+			me()->SetIntData(UNIT_INT_ATTACK_DAMAGE_LEFT_MIN, pMonsterInfo->attack_min_damage.get() * pLabyrinthMonster->GetDamage());
+			me()->SetIntData(UNIT_INT_ATTACK_DAMAGE_LEFT_MAX, pMonsterInfo->attack_max_damage.get() * pLabyrinthMonster->GetDamage());
+			me()->SetIntData(UNIT_INT_ATTACK_DAMAGE_RIGHT_MIN, pMonsterInfo->attack_min_damage.get() * pLabyrinthMonster->GetDamage());
+			me()->SetIntData(UNIT_INT_ATTACK_DAMAGE_RIGHT_MAX, pMonsterInfo->attack_max_damage.get() * pLabyrinthMonster->GetDamage());
+
+			me()->SetIntData(UNIT_INT_DEFENSE, pMonsterInfo->defense.get() * pLabyrinthMonster->GetDefense());
+
+			me()->SetIntData(UNIT_INT_ATTACK_RATE, pMonsterInfo->attack_success.get() * pLabyrinthMonster->GetAttackSuccessRate());
+			me()->SetIntData(UNIT_INT_DEFENSE_RATE, pMonsterInfo->defense_success.get() * pLabyrinthMonster->GetDefenseSuccessRate());
+
+			me()->SetIntData(UNIT_INT_ELEMENTAL_DAMAGE_MIN, pMonsterInfo->GetElementalDamageMin() * pLabyrinthMonster->GetElementalDamage());
+			me()->SetIntData(UNIT_INT_ELEMENTAL_DAMAGE_MAX, pMonsterInfo->GetElementalDamageMax() * pLabyrinthMonster->GetElementalDamage());
+			me()->SetIntData(UNIT_INT_ELEMENTAL_DEFENSE, pMonsterInfo->GetElementalDefense() * pLabyrinthMonster->GetElementalDefense());
+			me()->SetIntData(UNIT_INT_ELEMENTAL_ATTACK_SUCCESS_RATE, pMonsterInfo->GetElementalAttackRate() * pLabyrinthMonster->GetElementalAttackSuccessRate());
+			me()->SetIntData(UNIT_INT_ELEMENTAL_DEFENSE_SUCCESS_RATE, pMonsterInfo->GetElementalDefenseRate() * pLabyrinthMonster->GetElementalDefenseSuccessRate());
+
+			me()->SetLevel(pMonsterInfo->min_level.get() * pLabyrinthMonster->GetLevel());
 		}
 
 		void OnDie()

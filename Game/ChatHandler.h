@@ -85,6 +85,7 @@ class ChatHandler
 		void CommandItemWing(const char * msg);
 		void CommandBanChar(const char * msg);
 		void CommandBanAcc(const char * msg);
+		void CommandMonsterAdd(const char * msg);
 		void CommandZenAdd(const char * msg);
 		void CommandZenSet(const char * msg);
 		void CommandGuildTalk(const char * msg);
@@ -99,6 +100,7 @@ class ChatHandler
 		void CommandOnline(const char * msg);
 		void CommandShutdown(const char * msg);
 		void CommandAction(const char * msg);
+		void CommandMonsterRemove(const char * msg);
 		void CommandMonsterAlter(const char * msg);
 		void CommandMiscSiege(const char * msg);
 		void CommandMiscKill(const char * msg);

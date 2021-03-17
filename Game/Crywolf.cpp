@@ -531,23 +531,28 @@ void Crywolf::AddMonster(std::string const& ai_group)
 	std::vector<int32> ai_group_list;
 	ConvertAIGroupList(ai_group, ai_group_list);
 
-	auto event_monsters = sMonsterManager->GetEventMonsters(EVENT_CRYWOLF);
-	for (auto itr = event_monsters.first; itr != event_monsters.second; ++itr)
+	for ( MonsterEventList::const_iterator it = sMonsterMgr->monster_event_list.begin(); it != sMonsterMgr->monster_event_list.end(); ++it )
 	{
-		auto const& event_monster = itr->second;
-
-		if (std::find(ai_group_list.begin(), ai_group_list.end(), event_monster->AIGroup) == ai_group_list.end())
-			continue;
-
-		auto monster = sObjectMgr->MonsterTryAdd(event_monster->MonsterId, event_monster->MapId);
-		if (monster)
+		if ( (*it)->GetEventID() != EVENT_CRYWOLF )
 		{
-			monster->SetEventDBData(event_monster);
-			monster->SetRespawnType(GAME_OBJECT_RESPAWN_DELETE);
-			monster->AddAdditionalDataInt(0, event_monster->crywolf.score);
-			monster->AddToWorld();
+			continue;
+		}
 
-			sLog->outInfo(LOG_CRYWOLF, "Added Monster [%u][%u]", monster->GetEntry(), monster->GetClass());
+		if ( std::find(ai_group_list.begin(), ai_group_list.end(), (*it)->GetAIGroup()) == ai_group_list.end() )
+		{
+			continue;
+		}
+
+		Monster* pMonster = sObjectMgr->MonsterTryAdd((*it)->GetID(), (*it)->GetWorld());
+
+		if ( pMonster )
+		{
+			pMonster->SetEventDBData(*it);
+			pMonster->SetRespawnType(GAME_OBJECT_RESPAWN_DELETE);
+			pMonster->AddAdditionalDataInt(0, (*it)->crywolf.score);
+			pMonster->AddToWorld();
+
+			sLog->outInfo(LOG_CRYWOLF, "Added Monster [%u][%u]", pMonster->GetEntry(), pMonster->GetClass());
 		}
 	}
 }

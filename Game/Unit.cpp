@@ -81,6 +81,7 @@ void Unit::Init()
 	this->ResetOldPower(0);
 
 	this->SetElementalAttribute(ELEMENTAL_ATTRIBUTE_NONE);
+	this->SetElementalPattern(0);
 	this->SetMiningIndex(nullptr);
 	this->SetMiningStage(0);
 
@@ -91,6 +92,8 @@ void Unit::Init()
 	this->SetTempX(0);
 	this->SetTempY(0);
 
+	this->punish_map.clear();
+
 	this->Object::Init();
 }
 
@@ -98,7 +101,7 @@ void Unit::SendCustomObjectData()
 {
 	if ( Monster* pMonster = this->ToCreature() )
 	{
-		sMonsterManager->BuildMonsterCustomData(pMonster, nullptr);
+		sMonsterMgr->BuildMonsterCustomData(pMonster, nullptr);
 	}
 }
 

@@ -286,72 +286,99 @@ void Raklion::ProcState_End()
 
 void Raklion::AddEggs()
 {
-	auto event_monsters = sMonsterManager->GetEventMonsters(EVENT_RAKLION);
-	for (auto itr = event_monsters.first; itr != event_monsters.second; ++itr)
+	for ( MonsterEventList::const_iterator it = sMonsterMgr->monster_event_list.begin(); it != sMonsterMgr->monster_event_list.end(); ++it )
 	{
-		auto const& event_monster = itr->second;
-
-		if (event_monster->MonsterId != 460 && event_monster->MonsterId != 461 && event_monster->MonsterId != 462)
-			continue;
-
-		auto monster = sObjectMgr->MonsterTryAdd(event_monster->MonsterId, event_monster->MapId);
-		if (monster)
+		if ( (*it)->GetEventID() != EVENT_RAKLION )
 		{
-			monster->SetEventDBData(event_monster);
-			monster->SetRespawnType(GAME_OBJECT_RESPAWN_DELETE);
-			monster->AddToWorld();
-			IncreaseEggCount(1);
+			continue;
+		}
+
+		if ( (*it)->GetID() != 460 && 
+			 (*it)->GetID() != 461 && 
+			 (*it)->GetID() != 462 )
+		{
+			continue;
+		}
+
+		Monster* pMonster = sObjectMgr->MonsterTryAdd((*it)->GetID(), (*it)->GetWorld());
+
+		if ( pMonster )
+		{
+			pMonster->SetEventDBData(*it);
+			pMonster->SetRespawnType(GAME_OBJECT_RESPAWN_DELETE);
+			pMonster->AddToWorld();
+			this->IncreaseEggCount(1);
 		}
 	}
 }
 
 void Raklion::AddSelupan()
 {
-	auto event_monsters = sMonsterManager->GetEventMonsters(EVENT_RAKLION);
-	for (auto itr = event_monsters.first; itr != event_monsters.second; ++itr)
+	for ( MonsterEventList::const_iterator it = sMonsterMgr->monster_event_list.begin(); it != sMonsterMgr->monster_event_list.end(); ++it )
 	{
-		auto const& event_monster = itr->second;
-
-		if (event_monster->MonsterId != 459)
-			continue;
-
-		auto monster = sObjectMgr->MonsterTryAdd(event_monster->MonsterId, event_monster->MapId);
-		if (monster)
+		if ( (*it)->GetEventID() != EVENT_RAKLION )
 		{
-			monster->SetEventDBData(event_monster);
-			monster->SetRespawnType(GAME_OBJECT_RESPAWN_DELETE);
-			monster->AddToWorld();
+			continue;
+		}
 
-			IncreaseBossCount(1);
+		if ( (*it)->GetID() != 459 )
+		{
+			continue;
+		}
+
+		Monster* pMonster = sObjectMgr->MonsterTryAdd((*it)->GetID(), (*it)->GetWorld());
+
+		if ( pMonster )
+		{
+			pMonster->SetEventDBData(*it);
+			pMonster->SetRespawnType(GAME_OBJECT_RESPAWN_DELETE);
+			pMonster->AddToWorld();
+
+			this->IncreaseBossCount(1);
 		}
 	}
 }
 
 void Raklion::AddSummoned()
 {
-	auto event_monsters = sMonsterManager->GetEventMonsters(EVENT_RAKLION);
-	for (auto itr = event_monsters.first; itr != event_monsters.second; ++itr)
+	for ( MonsterEventList::const_iterator it = sMonsterMgr->monster_event_list.begin(); it != sMonsterMgr->monster_event_list.end(); ++it )
 	{
-		auto const& event_monster = itr->second;
-
-		if (event_monster->MonsterId == 459 || event_monster->MonsterId == 460 || event_monster->MonsterId == 461 || event_monster->MonsterId == 462)
-			continue;
-
-		auto monster = sObjectMgr->MonsterTryAdd(event_monster->MonsterId, event_monster->MapId);
-		if (monster)
+		if ( (*it)->GetEventID() != EVENT_RAKLION )
 		{
-			monster->SetEventDBData(event_monster);
-			monster->SetRespawnType(GAME_OBJECT_RESPAWN_DELETE);
-			monster->AddToWorld();
-			IncreaseSummonCount(1);
+			continue;
+		}
 
-			if (GetSummonMaxCount() > 0 && GetSummonCount() >= GetSummonMaxCount())
-				break;
+		if ( (*it)->GetID() == 459 || 
+			 (*it)->GetID() == 460 || 
+			 (*it)->GetID() == 461 || 
+			 (*it)->GetID() == 462 )
+		{
+			continue;
+		}
+
+		Monster* pMonster = sObjectMgr->MonsterTryAdd((*it)->GetID(), (*it)->GetWorld());
+
+		if ( pMonster )
+		{
+			pMonster->SetEventDBData(*it);
+			pMonster->SetRespawnType(GAME_OBJECT_RESPAWN_DELETE);
+			pMonster->AddToWorld();
+			this->IncreaseSummonCount(1);
+
+			if ( this->GetSummonMaxCount() > 0 )
+			{
+				if ( this->GetSummonCount() >= this->GetSummonMaxCount() )
+				{
+					break;
+				}
+			}
 		}
 	}
 
-	if (GetSummonMaxCount() <= 0)
-		SetSummonMaxCount(GetSummonCount());
+	if ( this->GetSummonMaxCount() <= 0 )
+	{
+		this->SetSummonMaxCount(this->GetSummonCount());
+	}
 }
 
 void Raklion::ClearMonster()

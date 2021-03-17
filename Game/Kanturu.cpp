@@ -748,62 +748,76 @@ int32 KanturuMgr::GetUserCount() const
 
 void KanturuMgr::AddMonster()
 {
-	SetMonsterCount(0);
+	this->SetMonsterCount(0);
 
-	auto event_monsters = sMonsterManager->GetEventMonsters(EVENT_KANTURU);
-	for (auto itr = event_monsters.first; itr != event_monsters.second; ++itr)
+	for ( MonsterEventList::const_iterator it = sMonsterMgr->monster_event_list.begin(); it != sMonsterMgr->monster_event_list.end(); ++it )
 	{
-		auto const& event_monster = itr->second;
-
-		if (event_monster->kanturu.state != GetState() || event_monster->kanturu.sub_state != GetSubState())
-			continue;
-
-		auto monster = sObjectMgr->MonsterTryAdd(event_monster->MonsterId, event_monster->MapId);
-		if (monster)
+		if ( (*it)->GetEventID() != EVENT_KANTURU )
 		{
-			monster->SetEventDBData(event_monster);
-			monster->SetRespawnType(GAME_OBJECT_RESPAWN_DELETE);
-			monster->AddAdditionalDataInt(0, GetState());
-			monster->AddAdditionalDataInt(1, GetSubState());
-			monster->AddToWorld();
+			continue;
+		}
 
-			SetNightmareAlive(true);
+		if ( (*it)->kanturu.state != this->GetState() || (*it)->kanturu.sub_state != this->GetSubState() )
+		{
+			continue;
+		}
 
-			sLog->outInfo(LOG_KANTURU, "Added Monster [%u][%u]", monster->GetEntry(), monster->GetClass());
+		Monster* pMonster = sObjectMgr->MonsterTryAdd((*it)->GetID(), (*it)->GetWorld());
 
-			if (monster->GetClass() == 364)
+		if ( pMonster )
+		{
+			pMonster->SetEventDBData(*it);
+			pMonster->SetRespawnType(GAME_OBJECT_RESPAWN_DELETE);
+			pMonster->AddAdditionalDataInt(0, this->GetState());
+			pMonster->AddAdditionalDataInt(1, this->GetSubState());
+			pMonster->AddToWorld();
+
+			this->SetNightmareAlive(true);
+
+			sLog->outInfo(LOG_KANTURU, "Added Monster [%u][%u]", pMonster->GetEntry(), pMonster->GetClass());
+
+			if ( pMonster->GetClass() == 364 )
+			{
 				continue;
+			}
 
-			IncreaseMonsterCount(1);
+			this->IncreaseMonsterCount(1);
 		}
 	}
 }
 
 void KanturuMgr::AddSummonedMonster()
 {
-	auto event_monsters = sMonsterManager->GetEventMonsters(EVENT_KANTURU);
-	for (auto itr = event_monsters.first; itr != event_monsters.second; ++itr)
+	for ( MonsterEventList::const_iterator it = sMonsterMgr->monster_event_list.begin(); it != sMonsterMgr->monster_event_list.end(); ++it )
 	{
-		auto const& event_monster = itr->second;
-
-		if (event_monster->kanturu.state != GetState() || event_monster->kanturu.sub_state != GetSubState())
-			continue;
-
-		if (event_monster->MonsterId == 364)
-			continue;
-
-		auto monster = sObjectMgr->MonsterTryAdd(event_monster->MonsterId, event_monster->MapId);
-		if (monster)
+		if ( (*it)->GetEventID() != EVENT_KANTURU )
 		{
-			monster->SetEventDBData(event_monster);
-			monster->SetRespawnType(GAME_OBJECT_RESPAWN_DELETE);
-			monster->AddAdditionalDataInt(0, GetState());
-			monster->AddAdditionalDataInt(1, GetSubState());
-			monster->AddToWorld();
+			continue;
+		}
 
-			sLog->outInfo(LOG_KANTURU, "Added Monster [%u][%u]", monster->GetEntry(), monster->GetClass());
+		if ( (*it)->kanturu.state != this->GetState() || (*it)->kanturu.sub_state != this->GetSubState() )
+		{
+			continue;
+		}
 
-			IncreaseMonsterCount(1);
+		if ( (*it)->GetID() == 364 )
+		{
+			continue;
+		}
+
+		Monster* pMonster = sObjectMgr->MonsterTryAdd((*it)->GetID(), (*it)->GetWorld());
+
+		if ( pMonster )
+		{
+			pMonster->SetEventDBData(*it);
+			pMonster->SetRespawnType(GAME_OBJECT_RESPAWN_DELETE);
+			pMonster->AddAdditionalDataInt(0, this->GetState());
+			pMonster->AddAdditionalDataInt(1, this->GetSubState());
+			pMonster->AddToWorld();
+
+			sLog->outInfo(LOG_KANTURU, "Added Monster [%u][%u]", pMonster->GetEntry(), pMonster->GetClass());
+
+			this->IncreaseMonsterCount(1);
 		}
 	}
 }

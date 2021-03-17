@@ -108,7 +108,7 @@ bool Monster::SpecialMagicAttack(uint16 skill, int16 type, Unit* pTarget)
 {
 	if ( !skill && type != -1 )
 	{
-		skill = sMonsterManager->GetRandomSkillSpecial(this, type);
+		skill = sMonsterMgr->GetRandomSkillSpecial(this, type);
 	}
 
 	if ( !this->HasSpecialSkill(skill) )

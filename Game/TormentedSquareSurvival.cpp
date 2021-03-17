@@ -274,24 +274,29 @@ int32 TormentedSquareSurvivalGround::GetStageScore() const
 
 void TormentedSquareSurvivalGround::AddMonster()
 {
-	auto event_monsters = sMonsterManager->GetEventMonsters(EVENT_TORMENTED_SQUARE_SURVIVAL);
-	for (auto itr = event_monsters.first; itr != event_monsters.second; ++itr)
+	for ( MonsterEventList::const_iterator it = sMonsterMgr->monster_event_list.begin(); it != sMonsterMgr->monster_event_list.end(); ++it )
 	{
-		auto const& event_monster = itr->second;
-
-		if (event_monster->tormented_square_survival.stage != GetStage())
-			continue;
-
-		auto monster = sObjectMgr->MonsterTryAdd(event_monster->MonsterId, event_monster->MapId);
-		if (monster)
+		if ( (*it)->GetEventID() != EVENT_TORMENTED_SQUARE_SURVIVAL )
 		{
-			monster->SetEventDBData(event_monster);
-			monster->SetRespawnType(event_monster->tormented_square_survival.boss != 0 ? GAME_OBJECT_RESPAWN_DELETE : GAME_OBJECT_RESPAWN_NORMAL);
-			monster->SetEventGround(0);
-			monster->SetEventStage(event_monster->tormented_square_survival.stage);
-			monster->SetMoveDistance(60);
-			monster->AddAdditionalDataInt(0, event_monster->tormented_square_survival.score);
-			monster->AddToWorld();
+			continue;
+		}
+
+		if ( (*it)->tormented_square_survival.stage != this->GetStage() )
+		{
+			continue;
+		}
+
+		Monster* pMonster = sObjectMgr->MonsterTryAdd((*it)->GetID(), (*it)->GetWorld());
+
+		if ( pMonster )
+		{
+			pMonster->SetEventDBData(*it);
+			pMonster->SetRespawnType((*it)->tormented_square_survival.boss != 0 ? GAME_OBJECT_RESPAWN_DELETE : GAME_OBJECT_RESPAWN_NORMAL);
+			pMonster->SetEventGround(0);
+			pMonster->SetEventStage((*it)->tormented_square_survival.stage);
+			pMonster->SetMoveDistance(60);
+			pMonster->AddAdditionalDataInt(0, (*it)->tormented_square_survival.score);
+			pMonster->AddToWorld();
 		}
 	}
 }

@@ -817,6 +817,8 @@ public:
 	
 	DECLARE_ENUM(int32, SkillPunishRatePVM);
 	DECLARE_ENUM(int32, SkillPunishRatePVP);
+	DECLARE_ENUM(uint32, SkillPunishFrequencyPVM);
+	DECLARE_ENUM(uint32, SkillPunishFrequencyPVP);
 	DECLARE_BOOL(SkillPunishFirstHit);
 	DECLARE_ENUM(int32, SkillPunishMaxDamage);
 

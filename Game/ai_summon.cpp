@@ -118,6 +118,9 @@ public:
 
 			me()->SetElementalAttribute(pPlayer->GetElementalAttribute());
 
+			me()->SetAttackRange(5);
+			me()->SetViewRange(5);
+			
 			uint8 preview_tmp[MAX_PREVIEW_DATA];
 			for ( int32 i = 0; i < MAX_PREVIEW_DATA; ++i )
 			{

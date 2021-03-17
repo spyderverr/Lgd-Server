@@ -196,7 +196,7 @@ public:
 
 				if ( me()->GetDirection() == 1 && abs(distance_x) <= 2 )
 				{
-					int16 cy = me()->GetY() - me()->GetMonsterTemplate()->AttackRange;
+					int16 cy = me()->GetY() - me()->GetAttackRange();
 
 					if ( cy <= pObject->GetY() && me()->GetY() >= pObject->GetY() )
 					{
@@ -207,7 +207,7 @@ public:
 
 				if ( me()->GetDirection() == 3 && abs(distance_y) <= 2 )
 				{
-					int16 cx = me()->GetX() - me()->GetMonsterTemplate()->AttackRange;
+					int16 cx = me()->GetX() - me()->GetAttackRange();
 
 					if ( cx <= pObject->GetX() && me()->GetX() >= pObject->GetX())
 					{

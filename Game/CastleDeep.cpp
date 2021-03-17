@@ -184,33 +184,42 @@ void CastleDeep::AddMonster()
 {
 	uint32 delay = 0;
 
-	auto event_monsters = sMonsterManager->GetEventMonsters(EVENT_CASTLE_DEEP);
-	for (auto itr = event_monsters.first; itr != event_monsters.second; ++itr)
+	for ( MonsterEventList::const_iterator it = sMonsterMgr->monster_event_list.begin(); it != sMonsterMgr->monster_event_list.end(); ++it )
 	{
-		auto const& event_monster = itr->second;
-
-		if (event_monster->castle_deep.stage != GetStage())
+		if ( (*it)->GetEventID() != EVENT_CASTLE_DEEP )
 		{
 			continue;
 		}
 
-		auto monster = sObjectMgr->MonsterTryAdd(event_monster->MonsterId, event_monster->MapId);
-		if (monster)
+		if ( (*it)->castle_deep.stage != this->GetStage() )
 		{
-			monster->SetEventDBData(event_monster);
-			monster->AddAdditionalDataInt(0, event_monster->castle_deep.type);
-			monster->SetDespawnTime(event_monster->castle_deep.despawn_time * IN_MILLISECONDS);
-			monster->SetDespawnType(MONSTER_DESPAWN_DIE);
+			continue;
+		}
 
-			if (event_monster->castle_deep.type == 1 || event_monster->castle_deep.type == 2)
-				monster->SetRespawnType(GAME_OBJECT_RESPAWN_DELETE);
+		Monster* pMonster = sObjectMgr->MonsterTryAdd((*it)->GetID(), (*it)->GetWorld());
+
+		if ( pMonster )
+		{
+			pMonster->SetEventDBData(*it);
+			pMonster->AddAdditionalDataInt(0, (*it)->castle_deep.type);
+			pMonster->SetDespawnTime((*it)->castle_deep.despawn_time * IN_MILLISECONDS);
+			pMonster->SetDespawnType(MONSTER_DESPAWN_DIE);
+
+			if ( (*it)->castle_deep.type == 1 || (*it)->castle_deep.type == 2 )
+			{
+				pMonster->SetRespawnType(GAME_OBJECT_RESPAWN_DELETE);
+			}
 			else
-				monster->SetRespawnType(GAME_OBJECT_RESPAWN_NORMAL);
+			{
+				pMonster->SetRespawnType(GAME_OBJECT_RESPAWN_NORMAL);
+			}
 
-			monster->AddToWorld();
+			pMonster->AddToWorld();
 
-			if (event_monster->SpawnDelay > delay)
-				delay = event_monster->SpawnDelay;
+			if ( (*it)->GetSpawnDelay() > delay )
+			{
+				delay = (*it)->GetSpawnDelay();
+			}
 		}
 	}
 

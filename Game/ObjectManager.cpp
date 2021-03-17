@@ -439,10 +439,10 @@ void CObjectMgr::Update()
 		if (MyGetTickCount() > this->GetRespawnMonsterTime())
 		{
 			this->SetRespawnMonster(false);
-			sMonsterManager->LoadMonsterExclusive();
-			sMonsterManager->LoadMonster();
-			sMonsterManager->LoadMonsterRespawn();
-			sMonsterManager->SpawnMonsters();
+			sMonsterMgr->LoadMonsterExclusive();
+			sMonsterMgr->LoadMonster();
+			sMonsterMgr->LoadMonsterRespawn();
+			sMonsterMgr->SpawnMonsters();
 		}
 	}
 }

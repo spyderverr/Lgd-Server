@@ -104,34 +104,45 @@ void Invasion::GenerateRespawnLocation()
 
 void Invasion::AddMonsters()
 {
-	auto event_monsters = sMonsterManager->GetEventMonsters(EVENT_INVASION);
-	for (auto itr = event_monsters.first; itr != event_monsters.second; ++itr)
+	for ( MonsterEventList::const_iterator it = sMonsterMgr->monster_event_list.begin(); it != sMonsterMgr->monster_event_list.end(); ++it )
 	{
-		auto const& event_monster = itr->second;
-
-		if (GetID() != event_monster->invasion.id)
-			continue;
-
-		if (GetGroup() != event_monster->invasion.group)
-			continue;
-
-		if (GetSubGroup() != event_monster->invasion.sub_group)
-			continue;
-
-		auto monster = sObjectMgr->MonsterTryAdd(event_monster->MonsterId, event_monster->MapId);
-		if (monster)
+		if ( (*it)->GetEventID() != EVENT_INVASION )
 		{
-			monster->SetEventDBData(event_monster);
-			monster->SetRespawnType(GAME_OBJECT_RESPAWN_DELETE);
-			monster->AddAdditionalDataInt(0, static_cast<int64>(GetID()));
-			monster->AddAdditionalDataInt(1, static_cast<int64>(GetGroup()));
-			monster->AddAdditionalDataInt(2, static_cast<int64>(GetSubGroup()));
+			continue;
+		}
 
-			if (GetX() != -1 && GetY() != -1)
-				monster->SetBasicLocation(GetX(), GetY(), GetX(), GetY());
+		if ( this->GetID() != (*it)->invasion.id )
+		{
+			continue;
+		}
 
-			monster->AddToWorld();
-			monsters[monster] = new MonsterData(monster, event_monster->invasion.boss, 1, event_monster->invasion.attack_percent);
+		if ( this->GetGroup() != (*it)->invasion.group )
+		{
+			continue;
+		}
+
+		if ( this->GetSubGroup() != (*it)->invasion.sub_group )
+		{
+			continue;
+		}
+
+		Monster* pMonster = sObjectMgr->MonsterTryAdd((*it)->GetID(), (*it)->GetWorld());
+
+		if ( pMonster )
+		{
+			pMonster->SetEventDBData(*it);
+			pMonster->SetRespawnType(GAME_OBJECT_RESPAWN_DELETE);
+			pMonster->AddAdditionalDataInt(0, static_cast<int64>(this->GetID()));
+			pMonster->AddAdditionalDataInt(1, static_cast<int64>(this->GetGroup()));
+			pMonster->AddAdditionalDataInt(2, static_cast<int64>(this->GetSubGroup()));
+		
+			if ( this->GetX() != -1 && this->GetY() != -1 )
+			{
+				pMonster->SetBasicLocation(this->GetX(), this->GetY(), this->GetX(), this->GetY());
+			}
+
+			pMonster->AddToWorld();
+			this->monsters[pMonster] = new MonsterData(pMonster, (*it)->invasion.boss, 1, (*it)->invasion.attack_percent);
 		}
 	}
 }

@@ -392,23 +392,28 @@ void ImperialFortressInstance::AddMonster(ImperialFortressMonsterType type)
 {
 	ImperialFortressLevel const* pLevelData = sImperialFortressMgr->GetLevel(this->GetZoneLevel());
 
-	auto event_monsters = sMonsterManager->GetEventMonsters(EVENT_IMPERIAL_FORTRESS);
-	for (auto itr = event_monsters.first; itr != event_monsters.second; ++itr)
+	for (MonsterEventList::const_iterator it = sMonsterMgr->monster_event_list.begin(); it != sMonsterMgr->monster_event_list.end(); ++it)
 	{
-		auto const& event_monster = itr->second;
-
-		if (event_monster->imperial_fortress.day != (this->GetDay() + 1) || event_monster->imperial_fortress.stage != this->GetZone() || event_monster->imperial_fortress.type != type)
+		if ((*it)->GetEventID() != EVENT_IMPERIAL_FORTRESS)
+		{
 			continue;
+		}
 
-		Monster* pMonster = sObjectMgr->MonsterTryAdd(event_monster->MonsterId, event_monster->MapId);
+		if ((*it)->imperial_fortress.day != (this->GetDay() + 1) || (*it)->imperial_fortress.stage != this->GetZone() || (*it)->imperial_fortress.type != type)
+		{
+			continue;
+		}
+
+		Monster* pMonster = sObjectMgr->MonsterTryAdd((*it)->GetID(), (*it)->GetWorld());
+
 		if (pMonster)
 		{
-			pMonster->SetEventDBData(event_monster);
+			pMonster->SetEventDBData(*it);
 			pMonster->SetRespawnType(GAME_OBJECT_RESPAWN_DELETE);
 
 			if (pLevelData)
 			{
-				if (ImperialFortressMonsterLevel * pMonsterData = pLevelData->GetMonster(event_monster->MonsterId))
+				if (ImperialFortressMonsterLevel * pMonsterData = pLevelData->GetMonster((*it)->GetID()))
 				{
 					pMonster->SetLevel(pMonsterData->level.get());
 
@@ -428,15 +433,17 @@ void ImperialFortressInstance::AddMonster(ImperialFortressMonsterType type)
 				}
 			}
 
-			pMonster->AddAdditionalDataInt(0, GetID());
-			pMonster->AddAdditionalDataInt(1, event_monster->imperial_fortress.id);
-			pMonster->AddAdditionalDataInt(2, GetZone());
+			pMonster->AddAdditionalDataInt(0, this->GetID());
+			pMonster->AddAdditionalDataInt(1, (*it)->imperial_fortress.id);
+			pMonster->AddAdditionalDataInt(2, this->GetZone());
 
-			pMonster->SetEventGround(GetZone());
-			pMonster->SetInstance(GetID());
+			pMonster->SetEventGround(this->GetZone());
+			pMonster->SetInstance(this->GetID());
 
 			if (pMonster->GetScriptName() == "imperial_fortress_monster_ai" || pMonster->GetScriptName() == "imperial_fortress_boss_ai")
-				IncreaseMonsterCount(1);
+			{
+				this->IncreaseMonsterCount(1);
+			}
 
 			pMonster->AddToWorld();
 

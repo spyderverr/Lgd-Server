@@ -215,6 +215,9 @@
     <ClInclude Include="QuestPacket.h">
       <Filter>Connection</Filter>
     </ClInclude>
+    <ClInclude Include="MonsterMgr.h">
+      <Filter>DBInfo</Filter>
+    </ClInclude>
     <ClInclude Include="GuildPacket.h">
       <Filter>Connection</Filter>
     </ClInclude>
@@ -581,9 +584,6 @@
     <ClInclude Include="TeleportManager.h">
       <Filter>DBInfo</Filter>
     </ClInclude>
-    <ClInclude Include="MonsterManager.h">
-      <Filter>DBInfo</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WorldClass.cpp">
@@ -693,6 +693,9 @@
     </ClCompile>
     <ClCompile Include="PlayerStatFruit.cpp">
       <Filter>GameObject\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterMgr.cpp">
+      <Filter>DBInfo</Filter>
     </ClCompile>
     <ClCompile Include="PlayerDarkSpirit.cpp">
       <Filter>GameObject\Player</Filter>
@@ -1130,9 +1133,6 @@
       <Filter>GameObject\Player\Store</Filter>
     </ClCompile>
     <ClCompile Include="TeleportManager.cpp">
-      <Filter>DBInfo</Filter>
-    </ClCompile>
-    <ClCompile Include="MonsterManager.cpp">
       <Filter>DBInfo</Filter>
     </ClCompile>
   </ItemGroup>

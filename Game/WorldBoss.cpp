@@ -104,44 +104,61 @@ void WorldBoss::ProcState_End()
 
 void WorldBoss::CreateBoss()
 {
-	RandomValue<MonsterEvent const*> random_value(nullptr);
+	RandomValue<int32> m_RandomValue(0);
 
-	auto event_monsters = sMonsterManager->GetEventMonsters(EVENT_WORLD_BOSS);
-	for (auto itr = event_monsters.first; itr != event_monsters.second; ++itr)
+	for ( MonsterEventList::const_iterator it = sMonsterMgr->monster_event_list.begin(); it != sMonsterMgr->monster_event_list.end(); ++it )
 	{
-		auto const& event_monster = itr->second;
+		if ( (*it)->GetEventID() != EVENT_WORLD_BOSS )
+		{
+			continue;
+		}
 
-		random_value.AddValue(event_monster, 0);
+		m_RandomValue.AddValue((*it)->world_boss.id, 0);
 	}
 
-	auto random_monster = random_value.GetRandomValue(RANDOM_POOL_RANDOM);
-	if (random_monster)
+	int32 id = m_RandomValue.GetRandomValue(RANDOM_POOL_RANDOM);
+
+	for ( MonsterEventList::const_iterator it = sMonsterMgr->monster_event_list.begin(); it != sMonsterMgr->monster_event_list.end(); ++it )
 	{
-		auto monster = sObjectMgr->MonsterTryAdd(random_monster->MonsterId, random_monster->MapId);
-		if (monster)
+		if ( (*it)->GetEventID() != EVENT_WORLD_BOSS )
 		{
-			monster->SetEventDBData(random_monster);
-			monster->SetRespawnType(GAME_OBJECT_RESPAWN_DELETE);
-			monster->SetItemBag(GenerateItemBag());
-			monster->AddToWorld();
+			continue;
+		}
 
-			SetBoss(monster);
+		if ( (*it)->world_boss.id != id )
+		{
+			continue;
+		}
 
-			sLog->outInfo("world_boss", "Added Boss [%u][%u]", monster->GetEntry(), monster->GetClass());
+		Monster* pMonster = sObjectMgr->MonsterTryAdd((*it)->GetID(), (*it)->GetWorld());
 
-			switch (sGameServer->GetWorldBossStartNotification())
+		if ( pMonster )
+		{
+			pMonster->SetEventDBData(*it);
+			pMonster->SetRespawnType(GAME_OBJECT_RESPAWN_DELETE);
+			pMonster->SetItemBag(this->GenerateItemBag());
+			pMonster->AddToWorld();
+			
+			this->SetBoss(pMonster);
+
+			sLog->outInfo("world_boss", "Added Boss [%u][%u]", pMonster->GetEntry(), pMonster->GetClass());
+
+			switch ( sGameServer->GetWorldBossStartNotification() )
 			{
 			case 1:
-				sObjectMgr->SendNoticeToAll(NOTICE_GLOBAL, "World Boss has appeared");
-				break;
+				{
+					sObjectMgr->SendNoticeToAll(NOTICE_GLOBAL, "World Boss has appeared");
+				} break;
 
 			case 2:
-				sObjectMgr->SendNoticeToAll(NOTICE_GLOBAL, "World Boss has appeared in %s", monster->GetWorldName());
-				break;
+				{
+					sObjectMgr->SendNoticeToAll(NOTICE_GLOBAL, "World Boss has appeared in %s", pMonster->GetWorldName());
+				} break;
 
 			case 3:
-				sObjectMgr->SendNoticeToAll(NOTICE_GLOBAL, "World Boss has appeared in %s at %d / %d", monster->GetWorldName(), monster->GetX(), monster->GetY());
-				break;
+				{
+					sObjectMgr->SendNoticeToAll(NOTICE_GLOBAL, "World Boss has appeared in %s at %d / %d", pMonster->GetWorldName(), pMonster->GetX(), pMonster->GetY());
+				} break;
 			}
 		}
 	}
