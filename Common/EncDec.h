@@ -12,6 +12,8 @@ enum
 #define MAX_KEY_1					8
 #define MAX_KEY_2					8
 
+// Note: These keys MUST be kept in sync with the ones from the GameServer: PacketEncDec.h
+
 static const uint8 key_1[MAX_KEY_1] = { 0x75, 0x99, 0x5C, 0xBA, 0x44, 0x2C, 0x87, 0x66 };
 static const uint8 key_2[MAX_KEY_2] = { 0xF3, 0xB3, 0x64, 0x36, 0xBE, 0xF6, 0x52, 0x01 };
 

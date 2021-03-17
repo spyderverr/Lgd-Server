@@ -2303,7 +2303,13 @@ void ChatHandler::CommandAdminItemPentagram(const char * msg)
 	if ( socket_4 == 0xFE ) { socket_4 = SOCKET_SLOT_EMPTY; }
 	if ( socket_5 == 0xFE ) { socket_5 = SOCKET_SLOT_EMPTY; }
 
-	SocketDataType socket[MAX_SOCKET_SLOT] = { socket_1, socket_2, socket_3, socket_4, socket_5 };
+	SocketDataType socket[MAX_SOCKET_SLOT] = {
+		static_cast<SocketDataType>(socket_1),
+		static_cast<SocketDataType>(socket_2),
+		static_cast<SocketDataType>(socket_3),
+		static_cast<SocketDataType>(socket_4),
+		static_cast<SocketDataType>(socket_5)
+	};
 	
 	Player* pOwner = sObjectMgr->FindPlayerByNameNoSensitive(this->GetWhisperName());
 

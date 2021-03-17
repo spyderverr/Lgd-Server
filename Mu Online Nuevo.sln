@@ -1,21 +1,33 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31019.35
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Common", "Common\Common.vcxproj", "{B98EEA21-D2A6-45E7-B5A7-31BCD2FA012C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ServerLink", "Server_Link\Server_Link.vcxproj", "{6054EEE0-FDAC-4537-A888-2F5C965578EA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B98EEA21-D2A6-45E7-B5A7-31BCD2FA012C} = {B98EEA21-D2A6-45E7-B5A7-31BCD2FA012C}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Util", "Util", "{95480D1A-244E-425F-ACC4-082FD6E81C68}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Server", "Server", "{96BD4B36-7BA3-481C-9EEA-E44C66C74096}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Game", "Game\Game.vcxproj", "{E3C1D872-0087-44A5-A969-7FFF4071DF63}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B98EEA21-D2A6-45E7-B5A7-31BCD2FA012C} = {B98EEA21-D2A6-45E7-B5A7-31BCD2FA012C}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LoginServer", "LoginServer\LoginServer.vcxproj", "{2FD8A9A5-8616-403F-A6F8-CA5B1E617B97}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B98EEA21-D2A6-45E7-B5A7-31BCD2FA012C} = {B98EEA21-D2A6-45E7-B5A7-31BCD2FA012C}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConnectServer", "ConnectServer\ConnectServer.vcxproj", "{A143DAFE-9E00-4423-BFA3-8C33DBD5ABF3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B98EEA21-D2A6-45E7-B5A7-31BCD2FA012C} = {B98EEA21-D2A6-45E7-B5A7-31BCD2FA012C}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,5 +60,8 @@ Global
 		{E3C1D872-0087-44A5-A969-7FFF4071DF63} = {96BD4B36-7BA3-481C-9EEA-E44C66C74096}
 		{2FD8A9A5-8616-403F-A6F8-CA5B1E617B97} = {96BD4B36-7BA3-481C-9EEA-E44C66C74096}
 		{A143DAFE-9E00-4423-BFA3-8C33DBD5ABF3} = {96BD4B36-7BA3-481C-9EEA-E44C66C74096}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C699AFE4-DF84-4D64-AD9E-0A8961DA1BAF}
 	EndGlobalSection
 EndGlobal

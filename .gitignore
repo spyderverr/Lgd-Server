@@ -1,4 +1,3 @@
-
 *.log
 *.ipch
 *.sdf
@@ -11,3 +10,13 @@ Libraries/Common.lib
 *.pch
 *.map
 *.exe
+
+.vs/
+Common/Release/
+ConnectServer/Release/
+Game/Release/
+LoginServer/Release/
+Server_Link/Release/
+
+Release/ConnectServer.iobj
+Release/ConnectServer.ipdb

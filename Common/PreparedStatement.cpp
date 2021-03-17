@@ -15,6 +15,8 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <mysql.h>
+
 PreparedStatement::PreparedStatement(uint32 index) :
 m_stmt(NULL),
 m_index(index),

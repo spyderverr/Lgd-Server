@@ -401,7 +401,7 @@ void Crywolf::ResetPlayerScore()
 class CrywolfScoreSort
 {
 public:
-	bool operator()(Player* pPlayer01, Player* pPlayer02)
+	bool operator()(Player* pPlayer01, Player* pPlayer02) const
 	{
 		SafeRAssert(pPlayer01, "pPlayer01 == nullptr", false);
 		SafeRAssert(pPlayer02, "pPlayer02 == nullptr", false);

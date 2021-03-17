@@ -1,3 +1,5 @@
+#include <algorithm>
+
 Scramble::Scramble()
 {
 	this->GetWordTime()->Reset();
@@ -189,7 +191,15 @@ void Scramble::MakeRandomWord()
 
 	std::string shuffled_string(this->word_list[Random(this->word_list.size())]);
 	this->SetOriginalWord(shuffled_string);
-	std::random_shuffle(shuffled_string.begin(), shuffled_string.end());
+	
+	#if ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) || __cplusplus >= 201703L)
+		std::random_device rng;
+		std::mt19937 urng(rng());
+		std::shuffle(shuffled_string.begin(), shuffled_string.end(), urng);
+	#else
+		std::random_shuffle(shuffled_string.begin(), shuffled_string.end());
+	#endif
+
 	this->SetWord(shuffled_string);
 
 	this->SetWordChange(false);

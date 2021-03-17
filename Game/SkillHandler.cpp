@@ -4467,20 +4467,20 @@ void SkillHandler::SkillSpiritHook()
 
 void SkillHandler::SkillRadianceInmuneI()
 {
-	//this->GetCaster()->MagicAttackSend(ENTRY(this->GetCaster()), this->GetSkill()->GetSkill());
-	//this->GetCaster()->AddBuff(BUFF_ERRTEL_IMMUNE_I, 60, 0, this->GetCaster());
+	this->GetCaster()->MagicAttackSend(ENTRY(this->GetCaster()), this->GetSkill()->GetSkill());
+	this->GetCaster()->AddBuff(BUFF_ERRTEL_IMMUNE_I, 60, 0, this->GetCaster());
 }
 	
 void SkillHandler::SkillRadianceInmuneII()
 {
-	//this->GetCaster()->MagicAttackSend(ENTRY(this->GetCaster()), this->GetSkill()->GetSkill());
-	//this->GetCaster()->AddBuff(BUFF_ERRTEL_IMMUNE_II, 60, 0, this->GetCaster());
+	this->GetCaster()->MagicAttackSend(ENTRY(this->GetCaster()), this->GetSkill()->GetSkill());
+	this->GetCaster()->AddBuff(BUFF_ERRTEL_IMMUNE_II, 60, 0, this->GetCaster());
 }
 	
 void SkillHandler::SkillRadianceWidenedI()
 {
-	//this->GetCaster()->MagicAttackSend(ENTRY(this->GetCaster()), this->GetSkill()->GetSkill());
-	//this->GetCaster()->AddBuff(BUFF_ERRTEL_BERSERKER_I, 60, 0, this->GetCaster());
+	this->GetCaster()->MagicAttackSend(ENTRY(this->GetCaster()), this->GetSkill()->GetSkill());
+	this->GetCaster()->AddBuff(BUFF_ERRTEL_BERSERKER_I, 60, 0, this->GetCaster());
 }
 
 void SkillHandler::SkillPoisonStorm()
